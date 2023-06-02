@@ -1,0 +1,2 @@
+web: bootstrap mappa lesz meg lesz híva lesz minta tesztért végén jó név és validalas egy html lesz és egy css
+python: 3 feladat: 8, 14, 18 pont 3 python fájl lesz a kimenet pontos legyen lesz kiíratás

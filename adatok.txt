@@ -1,0 +1,5 @@
+Alex;35;Foci
+Ádám;29;Röpi
+László;18;Sakk
+Éva;21;Röpi
+Sára;14;Olvasás
