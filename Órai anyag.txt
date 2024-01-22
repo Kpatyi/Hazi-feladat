@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Órai_feladat16
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //1.feladat: Eljárással: 20 darab random szám 1-10 között
+            //a.) mely számok nem szerepeltek
+            //b.) melyik az a szám amelyik a legtöbbször szerepelt
+            Szamok();
+            //2.feladat: Eljárással: Hozz létre egy szótárt amiben autók neve kulcs az ár egész szám érték
+            //a.) Hány olyan autó van ami meghaladja a 3.000.000-t
+            //b,) Van-e olyan aminek a piaci ára 1 millió alatt van és melyek ezek
+            //c.) Átlagosan mennyibe kerülnek
+            Autok();
+            //3.feladat: Függvénnyel: Adott a következő adat tipus: 5,18,31,86,12
+            //a.) Adja vissza random szerűen 1-90 között 5 darab számot és vizsgála meg hány találat volt
+            Console.WriteLine("A találatok darab száma: {0}", Lotto());
+            //4.feladat: Függvénnyel: lista: 10 tárgy névvel
+            //a.) Határoza meg hogy a tiz tárgy közül hány van ami 5 karakterből áll és a betüre végzödik
+            Console.WriteLine("A tárgyak közül azok amelyek 5 karakterből áll és a betűre végződik darab száma: {0}", Targyak());
+            //5.feladat: Eljárással: szótár: a kulcs 5 diákok neve és átlagok érték
+            //a.) Ki a legjobb tanuló?
+            //b.) Van-e aki nem érte el a 3,5 szintet ha van ki az?
+            //c.) Ki mennyi ösztöndíjat kap ha nem éri el 2,5-öt akkor semmi 2,6-tól 3,5 akkor 20.000Ft  3,6-tól 4,4 akkor 40.000Ft 4,5-tól akkor 50.000Ft 
+            Console.ReadKey();
+        }
+        static void Szamok() 
+        {
+            HashSet<int> szamok = new HashSet<int>() { };
+            Random szam = new Random();
+            for(int i = 0; i < 20; i++) 
+            {
+                int szam1 = szam.Next(1, 11);
+                szamok.Add(szam1);
+            }
+            foreach(int i in szamok) 
+            {
+                Console.WriteLine(i);
+            }
+            Console.WriteLine();
+            for(int i = 1; i < 11; i++) 
+            {
+                if (szamok.Contains(i) == false)
+                {
+                    Console.WriteLine(i);
+                }
+            }
+        }
+        static void Autok() 
+        {
+            Dictionary<string, int> szotar = new Dictionary<string, int>()
+            {
+                {"Suzuki" ,10000000 },
+                {"Opel"   ,20000000},
+                {"Hyundai",30000000},
+                {"Audi"   ,500000},
+                {"Toyota" ,300000}
+            };
+            //a.)
+            int darab = 0;
+            //b.)
+            bool van_e = false;
+            //c.)
+            double osszeg = 0;
+            List<string> autok = new List<string>() { };
+            foreach(KeyValuePair<string,int> i in szotar) 
+            {
+                if (i.Value > 3000000) 
+                {
+                    darab++;
+                }
+                if (i.Value < 1000000) 
+                {
+                    van_e = true;
+                    autok.Add(i.Key);
+                }
+                osszeg += i.Value;
+            }
+            Console.WriteLine("A 3 millió FT-ot meghaladó autók darab száma: {0}", darab);
+            if (van_e) 
+            {
+                for(int i = 0; i < autok.Count; i++) 
+                {
+                    Console.WriteLine("Az egy millió forint alatt lévő autó neve: {0}",autok[i]);
+                }
+            }
+            else 
+            {
+                Console.WriteLine("Nincs olyan autó ami egy millió alatt van");
+            }
+            double atlag = osszeg / 5;
+            Console.WriteLine("Az árak átlaga: {0}", atlag);
+        }
+        static int Lotto() 
+        {
+            Random szam = new Random();
+            HashSet<int> szamok =new HashSet<int>(){ };
+            for(int i = 0; i < 5; i++) 
+            {
+                int szam1 = szam.Next(1, 91);
+                while (szamok.Contains(szam1))
+                {
+                    szam1 = szam.Next(1, 91);
+                }
+                szamok.Add(szam1);
+            }
+            
+            List<int> enszamok = new List<int>() { 5, 18, 31, 86, 12 };
+            int talalatok = 0;
+            foreach(int i in szamok) 
+            {
+                foreach(int j in enszamok) 
+                {
+                    if (i == j)
+                    {
+                        talalatok++;
+                    }
+                }
+            }
+            return talalatok;
+        }
+        static int Targyak() 
+        {
+            List<string> targyak = new List<string>() {"labda","tolltaró","táska","kapu","ablak","doboz","radír","könyv","tábla","függöny"};
+            int darab = 0;
+            foreach(string i in targyak) 
+            {
+                if(i.Length==5 && i[i.Length - 1] == 'a') 
+                {
+                    darab++;
+                }
+            }
+
+            return darab;
+        }
+        static void Tanulok() 
+        {
+            Dictionary<string, double> szotar = new Dictionary<string, double>() 
+            {
+                {"Éva",3.6},
+                {"Péter",1.0},
+                {"Ádám",4.0},
+                {"Gábor",3.2},
+                {"István",5.0}
+            };
+            
+        }
+
+    }
+}
