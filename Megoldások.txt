@@ -1,0 +1,4 @@
+SELECT nev FROM kutya WHERE ivartalanitott=1 AND kan=0 ORDER by nev;
+SELECT DISTINCT nev FROM kutya,aktivitas WHERE kutya.id=aktivitas.kutyaid AND (razas=1 OR vakarozas=1) AND alvas<=80 ORDER BY nev;
+SELECT COUNT(datum) FROM aktivitas,kutya WHERE kutya.id=aktivitas.kutyaid AND nev="Husi" AND datum BETWEEN "2022.08.01" AND "2022.08.31" AND kutya.kaloria<aktivitas.kaloria;
+SELECT nev, Min(datum) FROM kutya,aktivitas WHERE aktivitas.kutyaid=kutya.id GROUP by nev ORDER BY MIN(datum) DESC LIMIT 1;
