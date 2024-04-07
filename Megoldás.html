@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megoldás</title>
+</head>
+<body onload="beolvas()">
+    <h1>2.feladat</h1>
+    <p id="masodik"></p>
+    <h1>3.feladat</h1>
+    <p id="harmadik"></p>
+    <h1>4.feladat</h1>
+    <p id="negyedik"></p>
+    <h1>6.feladat</h1>
+    <p id="hatodik"></p>
+    <h1>7.feladat</h1>
+    <h2>a;</h2>
+    <p id="hetedik_a"></p>
+    <h2>b;</h2>
+    <p id="hetedik_b"></p>
+    
+    <script>
+        class Taborok
+        {
+            constructor(kezdo_honap_k,kezdo_nap_k,vege_honap_k,vege_nap_k,diakok_k,tema_k)
+            {
+                this.kezdo_honap=kezdo_honap_k;
+                this.kezdo_nap=kezdo_nap_k;
+                this.vege_honap=vege_honap_k;
+                this.vege_nap=vege_nap_k;
+                this.diakok=diakok_k;
+                this.tema=tema_k;
+            }
+        }
+        function beolvas()
+        {
+            const ajax=new XMLHttpRequest();
+            ajax.onload=function()
+            {
+
+                //1.feladat:
+
+                const sorok=this.responseText.trim().split("\n");
+                const taborok=[];
+                for(let i=0;i<sorok.length;i++)
+                {
+                    const sor=sorok[i].split("\t");
+                    let tabor=new Taborok(parseInt(sor[0]),parseInt(sor[1]),parseInt(sor[2]),parseInt(sor[3]),sor[4].trim(),sor[5].trim());
+                    taborok.push(tabor);
+                }
+
+                //2.feladat:
+
+                let darab1=taborok.length;
+                let elso_tema=taborok[0].tema;
+                let utolso_tema=taborok[darab1-1].tema;
+                document.getElementById("masodik").innerHTML="Az adatsorok száma: "+darab1+"<br>"+"Az először rögzített tábor témája: "+elso_tema+"<br>"+"Az utoljára rögzített tábor témája: "+utolso_tema;
+                
+                //3.feladat:
+
+                let van_e=false;
+
+                for(let i=0;i<taborok.length;i++)
+                {
+                    if(taborok[i].tema=="zenei")
+                    {
+                        van_e=true;
+                    }
+                }
+
+                if(van_e)
+                {
+                    let kiir1="";
+                    for(let i=0;i<taborok.length;i++)
+                    {
+                        if(taborok[i].tema=="zenei")
+                        {
+                            kiir1+="Zenei tábor kezdődik "+taborok[i].kezdo_honap+". hó "+taborok[i].kezdo_nap+". napján <br>";
+                        }
+                    }
+                    document.getElementById("harmadik").innerHTML=kiir1;
+                }
+                else
+                {
+                    document.getElementById("harmadik").innerHTML="Nem volt zenei tábor."
+                }
+
+                //4.feladat:
+
+                const hosszusagok=[];
+                for(let i=0;i<taborok.length;i++)
+                {
+                    hosszusagok.push(taborok[i].diakok.length);
+                }
+                let legnagyobb=hosszusagok[0];
+                for(let i=0;i<hosszusagok.length;i++)
+                {
+                    if(hosszusagok[i]>legnagyobb)
+                    {
+                        legnagyobb=hosszusagok[i];
+                    }
+                }
+                let kiir2="Legnépszerűbbek:<br>"
+                for(let i=0;i<taborok.length;i++)
+                {
+                    if(taborok[i].diakok.length==legnagyobb)
+                    {
+                        kiir2+=taborok[i].kezdo_honap+" "+taborok[i].kezdo_nap+" "+taborok[i].tema+"<br>"
+                    }
+                }
+                document.getElementById("negyedik").innerHTML=kiir2;
+
+                //5.feladat:
+
+                function sorszam(honap,nap)
+                {
+                    let szam=0;
+                    if(honap==6)
+                    {
+                        szam+=nap-15
+                    }
+                    if(honap==7)
+                    {
+                        szam+=nap+15 
+                    }
+                    if(honap==8)
+                    {
+                        szam+=nap+46
+                    }
+                    return szam
+                }
+
+                //6.feladat:
+
+                let honap=parseInt(prompt("hó:"));
+                let nap=parseInt(prompt("nap:"));
+                let szam=sorszam(honap,nap);
+                let darab2=0;
+                for(let i=0;i<taborok.length;i++)
+                {
+                    let kezdet=sorszam(taborok[i].kezdo_honap,taborok[i].kezdo_nap);
+                    let vege=sorszam(taborok[i].vege_honap,taborok[i].vege_nap); 
+                    if(kezdet<=szam && szam<=vege)
+                    {
+                        darab2++;
+                    }
+                }
+                document.getElementById("hatodik").innerHTML="Ekkor éppen "+darab2+" tábor tart. ";
+
+                //7.feladat:
+
+                let betujel=prompt("Adja meg egy tanuló betűjelét:");
+                const datumok=[];
+                for(let i=0;i<taborok.length;i++)
+                {
+                    for(let j=0;j<taborok[i].diakok.length;j++)
+                    {
+                        if(taborok[i].diakok[j]==betujel)
+                        {
+                            let datum={"kezdo_honap":taborok[i].kezdo_honap,"kezdo_nap":taborok[i].kezdo_nap,"vege_honap":taborok[i].vege_honap,"vege_nap":taborok[i].vege_nap,"tema":taborok[i].tema};
+                            datumok.push(datum);
+                        }
+                    }
+                }
+
+                //a.)
+                
+                for(let i=datumok.length;i>=2;i--)
+                {
+                    for(let j=0;j<i-1;j++)
+                    {
+                        if(datumok[j].kezdo_honap==datumok[j+1].kezdo_honap)
+                        {
+                            if(datumok[j].kezdo_nap>datumok[j+1].kezdo_nap)
+                            {
+                                let datum=datumok[j];
+                                datumok[j]=datumok[j+1];
+                                datumok[j+1]=datum;
+                            }
+                        }
+                        else
+                        {
+                            if(datumok[j].kezdo_honap>datumok[j+1].kezdo_honap)
+                            {
+                                let datum=datumok[j];
+                                datumok[j]=datumok[j+1];
+                                datumok[j+1]=datum;
+                            }
+                        }
+                    }
+                }
+                let kiir3="";
+                for(let i=0;i<datumok.length;i++)
+                {
+                    kiir3+=datumok[i].kezdo_honap+"."+datumok[i].kezdo_nap+"-"+datumok[i].vege_honap+"."+datumok[i].vege_nap+". "+datumok[i].tema+"<br>";
+                }
+                document.getElementById("hetedik_a").innerHTML=kiir3;
+
+                //b.)
+                let nem_mehet=false;
+                for(let i=0;i<datumok.length-1;i++)
+                {
+                    let kezdo=sorszam(datumok[i].kezdo_honap,datumok[i].kezdo_nap);
+                    let vege=sorszam(datumok[i].vege_honap,datumok[i].vege_nap);
+                    let kozbe=sorszam(datumok[i+1].kezdo_honap,datumok[i+1].kezdo_nap);
+                    if(kezdo<=kozbe && kozbe<=vege)
+                    {
+                        nem_mehet=true;
+                    }
+                }
+                if(nem_mehet)
+                {
+                    document.getElementById("hetedik_b").innerHTML="Nem mehet el mindegyik táborba."
+                }
+                else
+                {
+                    document.getElementById("hetedik_b").innerHTML="Elmehet mindegyik táborba."
+                }
+
+            }
+            ajax.open("GET","taborok.txt");
+            ajax.send();
+        }
+    </script>
+</body>
+</html>
