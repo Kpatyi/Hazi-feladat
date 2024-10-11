@@ -1,0 +1,2 @@
+Dokumentáció: draw.io-val 
+Központi téma egy absztrakt ősz osztály és minimum 3 gyermek kell egy absztrakt metódus és kommentelések 3 minden gyermekből 3-3 példány 
