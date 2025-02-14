@@ -1,0 +1,391 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Firebase.Database;
+using Firebase.Database.Query;
+
+namespace Órai_feladat6
+{
+    public partial class Form1 : Form
+    {
+        FirebaseClient adatbazis;
+        public Form1()
+        {
+            InitializeComponent();
+            string firebaseurl = "https://matematika-feladatok-default-rtdb.firebaseio.com/";
+            adatbazis= new FirebaseClient(firebaseurl);
+        }
+
+        private void valasztas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            a_p.Enabled=false;
+            b_p.Enabled = false;
+            c_p.Enabled = false;
+            a_p.Clear();
+            b_p.Clear();
+            c_p.Clear();
+            switch (valasztas.Text)
+            {
+                case "a":
+                    b_p.Enabled = true;
+                    c_p.Enabled = true;
+                    break;
+                case "b":
+                    a_p.Enabled = true;
+                    c_p.Enabled = true;
+                    break;
+                case "c":
+                    a_p.Enabled = true;
+                    b_p.Enabled = true;
+                    break;
+                default:
+                    MessageBox.Show("Válasz keresendőt");
+                    break;
+            }
+        }
+
+        private async void kuldes_sz_Click(object sender, EventArgs e)
+        {
+            double a;
+            double b;
+            double c;
+            if(a_sz.Text.Trim()=="" || b_sz.Text.Trim() == "" || c_sz.Text.Trim() == "" || !double.TryParse(a_sz.Text,out a) || !double.TryParse(b_sz.Text, out b) || !double.TryParse(c_sz.Text, out c))
+            {
+                MessageBox.Show("Hibás adat");
+            }
+            else
+            {
+                if(a+b>c && a+c>b && b + c > a)
+                {
+                    MessageBox.Show("Szerkeszthető");
+                    var eredmeny = new { Szerkesztheto = true };
+                    await adatbazis.Child("matematika").Child("tergeometria").Child("Elso").PutAsync(eredmeny);
+                }
+                else
+                {
+                    MessageBox.Show("Nem szerkeszthető");
+                    var eredmeny = new { Szerkesztheto = false };
+                    await adatbazis.Child("matematika").Child("tergeometria").Child("Elso").PutAsync(eredmeny);
+                }
+            }
+        }
+
+        private async void kuldes_p_Click(object sender, EventArgs e)
+        {
+            double a;
+            double b;
+            double c;
+            switch (valasztas.Text)
+            {
+                case "a":
+                    if(b_p.Text.Trim()=="" || !double.TryParse(b_p.Text,out b) || c_p.Text.Trim() == "" || !double.TryParse(c_p.Text, out c))
+                    {
+                        MessageBox.Show("Hibás adat");
+                    }
+                    else
+                    {
+                        a = Math.Sqrt(Math.Pow(c, 2) - Math.Pow(b, 2));
+                        MessageBox.Show($"Az a oldal hossza: {a} cm");
+                        var eredmeny = new { a = a };
+                        await adatbazis.Child("matematika").Child("tergeometria").Child("Masodik").PutAsync(eredmeny);
+                    }
+                    break;
+                case "b":
+                    if (a_p.Text.Trim() == "" || !double.TryParse(a_p.Text, out a) || c_p.Text.Trim() == "" || !double.TryParse(c_p.Text, out c))
+                    {
+                        MessageBox.Show("Hibás adat");
+                    }
+                    else
+                    {
+                        b = Math.Sqrt(Math.Pow(c, 2) - Math.Pow(a, 2));
+                        MessageBox.Show($"Az b oldal hossza: {b} cm");
+                        var eredmeny = new { b = b };
+                        await adatbazis.Child("matematika").Child("tergeometria").Child("Masodik").PutAsync(eredmeny);
+                    }
+                    break;
+                case "c":
+                    if (a_p.Text.Trim() == "" || !double.TryParse(a_p.Text, out a) || b_p.Text.Trim() == "" || !double.TryParse(b_p.Text, out b))
+                    {
+                        MessageBox.Show("Hibás adat");
+                    }
+                    else
+                    {
+                        c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
+                        MessageBox.Show($"Az c oldal hossza: {c} cm");
+                        var eredmeny = new { c = c };
+                        await adatbazis.Child("matematika").Child("tergeometria").Child("Masodik").PutAsync(eredmeny);
+                    }
+                    break;
+                default:
+                    MessageBox.Show("Válasz keresendőt");
+                    break;
+            }
+        }
+
+        private async void kuldes_t_Click(object sender, EventArgs e)
+        {
+            double tavolsag;
+            double szog;
+            if(tavolsag_t.Text.Trim()=="" || szog_t.Text.Trim()=="" || !double.TryParse(tavolsag_t.Text, out tavolsag) || !double.TryParse(szog_t.Text, out szog))
+            {
+                MessageBox.Show("Hibás adat");
+            }
+            else
+            {
+                if(szog<10 || szog > 45)
+                {
+                    MessageBox.Show("A szög 10 és 45 közötti számnak kell lennie");
+                }
+                else
+                {
+                    double magassag = Math.Tan(szog * Math.PI / 180) * tavolsag;
+                    MessageBox.Show($"A torony magassága: {magassag} m");
+                    var eredmeny = new { magassag=magassag};
+                    await adatbazis.Child("matematika").Child("tergeometria").Child("Harmadik").PutAsync(eredmeny);
+
+                }
+            }
+        }
+
+        private async void kuldes_m_Click(object sender, EventArgs e)
+        {
+            double a;
+            double b;
+            double c;
+            if(a_m.Text.Trim()=="" || !double.TryParse(a_m.Text,out a) || b_m.Text.Trim()=="" || !double.TryParse(b_m.Text, out b) || c_m.Text.Trim()=="" || !double.TryParse(c_m.Text,out c))
+            {
+                MessageBox.Show("Hibás adat");
+            }
+            else
+            {
+                if(a==0)
+                {
+                    if (b == 0)
+                    {
+                        if(c == 0)
+                        {
+                            MessageBox.Show("Azonosság");
+                            var eredmeny = new { Valasz = "Azonosság" };
+                            await adatbazis.Child("matematika").Child("egyenletek").Child("Masodik").PutAsync(eredmeny);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ellentmondás");
+                            var eredmeny = new { Valasz = "Ellentmondás" };
+                            await adatbazis.Child("matematika").Child("egyenletek").Child("Masodik").PutAsync(eredmeny);
+                        }
+                    }
+                    else
+                    {
+                        double x = -c / b;
+                        MessageBox.Show($"Az egyenlet megoldása x= {x}");
+                        var eredmeny = new { x = x };
+                        await adatbazis.Child("matematika").Child("egyenletek").Child("Masodik").PutAsync(eredmeny);
+                    }
+                }
+                else
+                {
+                    double diszkriminans = Math.Pow(b,2) - 4 * a * c;
+                    if (diszkriminans >= 0)
+                    {
+                        double x1 = (-b + Math.Sqrt(diszkriminans))/(2*a);
+                        double x2 = (-b - Math.Sqrt(diszkriminans)) / (2 * a);
+                        if (x1 == x2)
+                        {
+                            MessageBox.Show($"Az egyenlet megoldása x= {x1}");
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Az egyenlet megoldása x1 = {x1} x2 = {x2}");
+                        }
+                        var eredmeny = new { x1 = x1, x2 = x2 };
+                        await adatbazis.Child("matematika").Child("egyenletek").Child("Masodik").PutAsync(eredmeny);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nincs valós gyök");
+                        var eredmeny = new { Valasz="Nincs valós gyök"};
+                        await adatbazis.Child("matematika").Child("egyenletek").Child("Masodik").PutAsync(eredmeny);
+                    }
+                }
+            }
+        }
+
+        private void valasz1_Click(object sender, EventArgs e)
+        {
+            int n = 3;
+            int faktorialis = 1;
+            for(int i = 1; i < n + 1; i++)
+            {
+                faktorialis*=i;
+            }
+            MessageBox.Show($"{faktorialis} féle képpen tudnak dobogóra állni");
+        }
+
+        private void valasz2_Click(object sender, EventArgs e)
+        {
+            double n = 4;
+            double k = 4;
+            double darab = Math.Pow(n, k);
+            MessageBox.Show($"{darab} darab számot lehet létrehozni");
+        }
+
+        private void megoldas_e_Click(object sender, EventArgs e)
+        {
+            string egyenlet = elsofoku_egyenlet.Text.Trim();
+            List<char> betuk = new List<char>();
+            foreach(char i in egyenlet)
+            {
+                if (!betuk.Contains(i) && char.IsLetter(i))
+                {
+                    betuk.Add(i);
+                }
+            }
+            if (egyenlet == "" || betuk.Count>1 || egyenlet.Where(i=>i=='{').Count()!= egyenlet.Where(i => i == '}').Count() || egyenlet.Where(i => i == '[').Count() != egyenlet.Where(i => i == ']').Count() || egyenlet.Where(i => i == '(').Count() != egyenlet.Where(i => i == ')').Count() || egyenlet.Where(i=>i=='=').Count()!=1 || egyenlet.IndexOf('=')==0 || egyenlet.IndexOf('=') == egyenlet.Length-1)
+            {
+                MessageBox.Show("Hibás elsőfokú egyenlet");
+            }
+            else
+            {
+                List<string> egyenlet_felosztva= egyenlet.Split('=').ToList();
+                string bal = egyenlet_felosztva[0];
+                string jobb = egyenlet_felosztva[1];
+
+                while (bal.Contains('(')) 
+                {
+                    List<int> bal_zarojelek_ny = new List<int>();
+                    List<int> bal_zarojelek_z = new List<int>();
+                    MessageBox.Show(bal);
+                    for (int i = 0; i < bal.Length; i++)
+                    {
+                        if (bal[i] == '{' || bal[i] == '[' || bal[i] == '(')
+                        {
+                            bal_zarojelek_ny.Add(i);
+                        }
+
+                        if (bal[i] == '}' || bal[i] == ']' || bal[i] == ')')
+                        {
+                            bal_zarojelek_z.Add(i);
+                        }
+                    }
+                    List<Zarojel> bal_zarojelek = new List<Zarojel>();
+                    foreach (int i in bal_zarojelek_z)
+                    {
+                        foreach (int j in bal_zarojelek_ny)
+                        {
+                            if (i > j)
+                            {
+                                bal_zarojelek.Add(new Zarojel(j, i));
+                            }
+                        }
+                    }
+                    var bal_zarojelek_sorban = bal_zarojelek.Where(i => i.kulonbseg == bal_zarojelek.Min(j => j.kulonbseg)).ToList();
+                    foreach (var i in bal_zarojelek_sorban)
+                    {
+                        MessageBox.Show($"{i.kezdet},{i.veg}");
+                        string resz = bal.Substring(i.kezdet + 1, i.kulonbseg - 1);
+                        if (!double.TryParse(resz, out double szam1))
+                        {
+                            for(int j = 0; j < resz.Length-1; j ++)
+                            {
+                                if (!char.IsLetterOrDigit(resz[j]) && !char.IsLetterOrDigit(resz[j+1]) && (resz[j]=='-' || resz[j]=='+') && (resz[j+1] == '-' || resz[j+1] == '+'))
+                                {
+                                    if (resz[j] == resz[j + 1])
+                                    {
+                                        resz=new StringBuilder(resz).Remove(j,2).Insert(j,'+').ToString();
+                                    }
+                                    else
+                                    {
+                                        resz = new StringBuilder(resz).Remove(j, 2).Insert(j, '-').ToString();
+                                    }
+                                }
+                            }
+                            MessageBox.Show(resz);
+                        }
+                        else
+                        {
+                            int hely=i.kezdet;
+                            while ((char.IsDigit(bal[hely - 1]) || (i.kezdet-1==hely-1 && bal[hely-1]=='*') || bal[hely-1] == ',') && hely - 1 > 0)
+                            {
+                                hely--;
+                            }
+                            if(hely != 0)
+                            {
+                                if (bal[hely - 1]=='-')
+                                {
+                                    szam1 *= -1;
+                                }
+                                string utasitas = bal.Substring(hely - 1, i.kezdet - hely+1);
+                                if (char.IsDigit(utasitas[utasitas.Length - 1]))
+                                {
+                                    if (utasitas[0]=='+' || utasitas[0] == '-')
+                                    {
+                                        double szorzo = double.Parse(utasitas);
+                                        szam1 *= szorzo;
+                                    }
+                                    else
+                                    {
+                                        double szorzo = double.Parse(utasitas.Substring(1));
+                                        szam1 *= szorzo;
+                                    }
+                                }
+                                else
+                                {
+                                    if (utasitas[0]=='+' || utasitas[0] == '-')
+                                    {
+                                        if (utasitas.Length - 1 == 0) 
+                                        {
+                                            switch (utasitas[utasitas.Length - 1])
+                                            {
+                                                case '-':
+                                                    szam1 *= -1;
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            double szam2 = double.Parse(utasitas.Substring(0, utasitas.Length - 1));
+                                            szam1 *= szam2;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(utasitas.Substring(1, utasitas.Length-2));
+                                        double szam2 = double.Parse(utasitas.Substring(1, utasitas.Length-2));
+                                        switch (utasitas[utasitas.Length - 1])
+                                        {
+                                            case '+':
+                                                szam1 += szam2;
+                                                break;
+                                            case '-':
+                                                szam1 -= szam2;
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                            bal = new StringBuilder(bal).Remove(hely, i.veg - hely + 1).Insert(hely, szam1.ToString()).ToString();
+
+                        }
+                    }
+                }
+                MessageBox.Show(bal);
+
+                /*
+                int hely = egyenlet.ToList().FindIndex(i => i == '=');
+                string bal =egyenlet.Substring(0, hely);
+                string jobb =egyenlet.Substring(hely+1,egyenlet.Length-1-hely);
+                MessageBox.Show(bal);
+                MessageBox.Show(jobb);
+                */
+            }
+        }
+    }
+}
