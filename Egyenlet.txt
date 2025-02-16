@@ -1,0 +1,45 @@
+                List<string> egyenlet_reszek = egyenlet.Split('=').ToList();
+                string bal = egyenlet_reszek[0];
+                string jobb = egyenlet_reszek[1];
+                int hely = bal.IndexOf('x');
+                int uj_hely = hely;
+                while (uj_hely - 1 > 0 && char.IsDigit(bal[uj_hely - 1]))
+                {
+                    uj_hely--;
+                }
+                double b = double.Parse(bal.Substring(hely + 1, bal.Length - hely - 1));
+                if (uj_hely != hely)
+                {
+                    if (uj_hely - 1 == 0)
+                    {
+                        double a = double.Parse(bal.Substring(uj_hely - 1, hely - uj_hely + 1));
+                        //MessageBox.Show($"a: {a} b: {b}");
+                        MessageBox.Show((-b / a).ToString());
+                    }
+                    else
+                    {
+                        double a = double.Parse(bal.Substring(uj_hely, hely - uj_hely));
+                        //MessageBox.Show($"a: {a} b: {b}");
+                        MessageBox.Show((-b / a).ToString());
+                    }
+                }
+                else
+                {
+                    if (uj_hely == 0)
+                    {
+                        MessageBox.Show((-b).ToString());
+                    }
+                    else
+                    {
+                        if (bal[uj_hely - 1] == '-')
+                        {
+                            MessageBox.Show((-b*-1).ToString());
+                        }
+                        else
+                        {
+                            double a=double.Parse(bal[uj_hely - 1].ToString());
+                            MessageBox.Show((-b/a).ToString());
+                        }
+
+                    }
+                }
