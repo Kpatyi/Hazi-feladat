@@ -1,0 +1,237 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using Mysqlx.Notice;
+using System.Diagnostics;
+
+namespace Órai_feladat8
+{
+    public partial class Form1 : Form
+    {
+        private string kapocsolat_adatok = "Server=localhost;Database=filmek;Uid=root;Pwd=;";
+        public List<Filmek> filmek = new List<Filmek>();
+        public Form1()
+        {
+            using (var kapcsolat = new MySqlConnection(kapocsolat_adatok))
+            {
+                kapcsolat.Open();
+                string lekerdezes = "SELECT * FROM filmek";
+                using (var utasitas = new MySqlCommand(lekerdezes,kapcsolat))
+                using(var olvasas = utasitas.ExecuteReader())
+                {
+                    while (olvasas.Read())
+                    {
+                        Filmek film = new Filmek(olvasas["cim"].ToString(),olvasas["foszereplo"].ToString(), olvasas["rendezo"].ToString(), int.Parse(olvasas["ev"].ToString()), double.Parse(olvasas["ertekeles"].ToString()), int.Parse(olvasas["nepszeruseg"].ToString()), int.Parse(olvasas["jelolesek"].ToString()), int.Parse(olvasas["gyozelmek"].ToString()), int.Parse(olvasas["oscarok"].ToString()));
+                        filmek.Add(film);
+                    }
+                }
+            }
+            InitializeComponent();
+            bool ev = false;
+            bool nepszeruseg = false;
+            bool ertekeles = false;
+            bool rendezo = false;
+            bool foszereplo = false;
+            bool gyozelmek = false;
+            bool jelolesek = false;
+            bool oscarok = false;
+            filmek.ForEach(i =>
+            {
+                adatok.Rows.Add(i.Cim, i.Foszereplo,i.Rendezo,i.Ev, i.Ertekeles, i.Nepszeruseg, i.Jelolesek, i.Gyozelmek, i.Oscarok);
+            });
+            if (filmek[0].Ev == filmek[1].Ev)
+            {
+                ev_szerint.Items.Add("Év szerint a két film egyezik");
+            }
+            else
+            {
+                if (filmek[0].Ev > filmek[1].Ev)
+                {
+                    ev_szerint.Items.Add($"Év szerint a(z) {filmek[0].Cim}");
+                    ev_szerint.Items.Add($"későbbi mint a(z) {filmek[1].Cim}");
+                }
+                else
+                {
+                    ev_szerint.Items.Add($"Év szerint a(z) {filmek[0].Cim}");
+                    ev_szerint.Items.Add($"korábbi mint a(z) {filmek[1].Cim}");
+                    ev = true;
+                }
+            }
+            if (filmek[0].Ertekeles == filmek[1].Ertekeles)
+            {
+                ertekeles_szerint.Items.Add("Értékelés szerint a két film egyezik");
+            }
+            else
+            {
+                if (filmek[0].Ertekeles > filmek[1].Ertekeles)
+                {
+                    ertekeles_szerint.Items.Add($"Értékelés szerint a(z) {filmek[0].Cim}-t");
+                    ertekeles_szerint.Items.Add($"többre értékelik mint a(z) {filmek[1].Cim}-t");
+                }
+                else
+                {
+                    ertekeles_szerint.Items.Add($"Értékelés szerint a(z) {filmek[1].Cim}-t");
+                    ertekeles_szerint.Items.Add($"többre értékelik mint a(z) {filmek[0].Cim}-t");
+                    ertekeles = true;
+                }
+            }
+
+            if (filmek[0].Rendezo == filmek[1].Rendezo)
+            {
+                rendezo_szerint.Items.Add("Rendező szerint a két film egyezik");
+            }
+            else
+            {
+                rendezo_szerint.Items.Add("Rendező szerint a két film különbőzik");
+                rendezo=true;
+            }
+
+            if (filmek[0].Foszereplo == filmek[1].Foszereplo)
+            {
+                foszereplo_szerint.Items.Add("Főszereplő szerint a két film egyezik");
+            }
+            else
+            {
+                foszereplo_szerint.Items.Add("Főszereplő szerint a két film különbőzik");
+                foszereplo = true;
+            }
+
+            if (filmek[0].Gyozelmek == filmek[1].Gyozelmek)
+            {
+                gyozelmek_szerint.Items.Add("Győzelmek szerint a két film egyezik");
+            }
+            else
+            {
+                if (filmek[0].Gyozelmek > filmek[1].Gyozelmek)
+                {
+                    gyozelmek_szerint.Items.Add($"Győzelmek szerint a(z) {filmek[0].Cim}");
+                    gyozelmek_szerint.Items.Add($"többször nyert mint a(z) {filmek[1].Cim}");
+                }
+                else
+                {
+                    gyozelmek_szerint.Items.Add($"Győzelmek szerint a(z) {filmek[1].Cim}");
+                    gyozelmek_szerint.Items.Add($"többször nyert mint a(z) {filmek[0].Cim}");
+                    gyozelmek=true;
+                }
+            }
+
+            if (filmek[0].Nepszeruseg == filmek[1].Nepszeruseg)
+            {
+                nepszeruseg_szerint.Items.Add("A két film népszerűség szerint egyforma");
+            }
+            else
+            {
+                if (filmek[0].Nepszeruseg > filmek[1].Nepszeruseg)
+                {
+                    nepszeruseg_szerint.Items.Add($"Népszerűség szerint a(z) {filmek[0].Cim}");
+                    nepszeruseg_szerint.Items.Add($"népszerűbb mint a(z) {filmek[1].Cim}");
+                }
+                else
+                {
+                    nepszeruseg_szerint.Items.Add($"Népszerűség szerint a(z) {filmek[1].Cim}");
+                    nepszeruseg_szerint.Items.Add($"népszerűbb mint a(z) {filmek[0].Cim}");
+                    nepszeruseg=true;
+                }
+            }
+
+            if (filmek[0].Jelolesek == filmek[1].Jelolesek)
+            {
+                jelolesek_szerint.Items.Add("A két film jelölések szerint egyezik");
+            }
+            else
+            {
+                if (filmek[0].Jelolesek > filmek[1].Jelolesek)
+                {
+                    jelolesek_szerint.Items.Add($"Jelölések szerint a(z) {filmek[0].Cim}-et");
+                    jelolesek_szerint.Items.Add($"többször jelölték mint a(z) {filmek[1].Cim}-et");
+                }
+                else
+                {
+                    jelolesek_szerint.Items.Add($"Jelölések szerint a(z) {filmek[1].Cim}-et");
+                    jelolesek_szerint.Items.Add($"többször jelölték mint a(z) {filmek[0].Cim}-et");
+                    jelolesek = true;
+                }
+            }
+
+            if (filmek[0].Oscarok == filmek[1].Oscarok)
+            {
+                oscarok_szerint.Items.Add("A két film oscarok szerint egyezik");
+            }
+            else
+            {
+                if (filmek[0].Oscarok > filmek[1].Oscarok)
+                {
+                    oscarok_szerint.Items.Add($"Oscarok szerint a(z) {filmek[0].Cim}");
+                    oscarok_szerint.Items.Add($"több oscar díjat kapott mint a(z) {filmek[1].Cim}");
+                }
+                else
+                {
+                    oscarok_szerint.Items.Add($"Oscarok szerint a(z) {filmek[1].Cim}");
+                    oscarok_szerint.Items.Add($"több oscar díjat kapott mint a(z) {filmek[0].Cim}");
+                    oscarok = true;
+                }
+            }
+            if (nepszeruseg)
+            {
+                vegkiertekeles.Items.Add($"A(z) {filmek[1].Cim} azért népszerűbb mert");
+            }
+            else
+            {
+                vegkiertekeles.Items.Add($"A(z) {filmek[1].Cim} azért jobb mert");
+            }
+            if (ev)
+            {
+                vegkiertekeles.Items.Add("később készült és jobb volt a technika");
+            }
+            if (rendezo)
+            {
+                vegkiertekeles.Items.Add("más rendező rendezte");
+            }
+
+            if (foszereplo)
+            {
+                vegkiertekeles.Items.Add("más színész játszotta a főszerepet");
+            }
+
+            if (gyozelmek)
+            {
+                vegkiertekeles.Items.Add("többször győzött mint az első");
+            }
+
+            if (ertekeles)
+            {
+                vegkiertekeles.Items.Add("több értékelést kapott");
+            }
+
+            if (jelolesek)
+            {
+                vegkiertekeles.Items.Add("többször jelölték mint az elsőt");
+            }
+            if (oscarok)
+            {
+                vegkiertekeles.Items.Add("több oscar díjat kapott mint az első");
+            }
+            cim1.Text = filmek[0].Cim;
+            link1.Text = filmek[0].Cim;
+            cim2.Text = filmek[1].Cim;
+            link2.Text = filmek[1].Cim;
+        }
+
+        private void link1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://www.youtube.com/watch?v=t06RUxPbp_c&ab_channel=SonyPicturesEntertainment");
+        }
+
+        private void link2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://www.youtube.com/watch?v=3jBFwltrxJw&ab_channel=SonyPicsatHome");
+        }
+    }
+}
