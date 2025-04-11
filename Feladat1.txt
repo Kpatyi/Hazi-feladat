@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _11_es_feladat
+{
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            //1. Téma: Szótár + Tömb (Összegzés + Maximum keresés)
+            //Feladat: Készíts egy programot, amely egy ország - város - lakosság struktúrából meghatározza, melyik ország rendelkezik összesítve a legnagyobb városi lakossággal!
+
+            //1 Egy szótár tartalmazza az országok neveit, értékként pedig egy újabb szótárat, amely a városokat és lakosságukat(millió fő) tartalmazza.
+            Dictionary < string,Dictionary<string,int>> orszagok=new Dictionary < string, Dictionary<string, int>>() 
+            {
+                {"Olaszország",new Dictionary<string, int>()
+                    {
+                        {"Róma",2},
+                        {"Velence",1},
+                        {"Milánó",1},
+                        {"Firenze",3},
+                        {"Nápoly",1 }
+                    }
+                },
+                {"Románia",new Dictionary<string, int>()
+                    {
+                        {"Bukarest",1},
+                        {"Kolozsvár",5},
+                        {"Beszterce",6},
+                        {"Magyarnemegye",1},
+                        {"Tóhát",2 }
+                    }
+                },
+                {"Magyarország",new Dictionary<string, int>()
+                    {
+                        {"Fehérgyarmat",1},
+                        {"Debrecen",5},
+                        {"Nyíregyháza",6},
+                        {"Budapest",10},
+                        {"Mátészalka",2 }
+                    }
+                }
+            };
+
+            //2. A program számolja ki országonként az összes városi lakosságot.
+            Dictionary<string,int> orszag_lakossag = new Dictionary<string,int>();
+            foreach (KeyValuePair<string, Dictionary<string, int>> orszag in orszagok)
+            {
+                int osszeg = 0;
+                Dictionary<string, int> varosok = orszag.Value;
+                foreach (KeyValuePair<string, int> i in varosok)
+                {
+                    osszeg += i.Value;
+                }
+                orszag_lakossag.Add(orszag.Key, osszeg);
+            }
+            //3. Határozza meg a legnépesebb országot ezek alapján.
+            int max = orszag_lakossag["Olaszország"];
+            foreach(KeyValuePair<string,int> i in orszag_lakossag)
+            {
+                if (max < i.Value)
+                {
+                    max = i.Value;
+                }
+            }
+
+            //4.Írja ki az ország nevét és összesített városi lakosságát.
+            foreach (KeyValuePair<string ,int> orszag in orszag_lakossag)
+            {
+                if (orszag.Value == max)
+                {
+                    Console.WriteLine($"A legnépessebb ország: {orszag.Key} összesített lakosság száma: {max} millió fő");
+                    break;
+                }
+            }
+            Console.WriteLine();
+
+            //2. Téma: Téma: Lista (Átlag + Eldöntés + Szélsőérték-keresés)
+            //Feladat: Elemezz egy heti hőmérsékleti listát, és állapítsd meg:
+            //1.Az átlagos hőmérsékletet,
+            //2.Hogy volt - e fagyos nap(0°C vagy kevesebb),
+            //3.És melyik napon volt a legmelegebb(index alapján, pl. "3. nap").
+            List<int> homersekletek = new List<int>()
+            {
+                20,15,30,12,22,-1,25
+            };
+            double osszeg2 = 0;
+            foreach(int i in homersekletek)
+            {
+                osszeg2 += i;
+            }
+            double atlag = osszeg2 / homersekletek.Count;
+            Console.WriteLine($"Az átlagos hőmérséklet: {atlag}°C");
+
+            bool van_e=false;
+            foreach(int i in homersekletek)
+            {
+                if (i <= 0)
+                {
+                    van_e = true;
+                    break;
+                }
+            }
+            if (van_e)
+            {
+                Console.WriteLine("Volt fagyos nap");
+            }
+            else
+            {
+                Console.WriteLine("Nem volt fagyos nap");
+            }
+            int max2 = homersekletek[0];
+            foreach(int i in homersekletek)
+            {
+                if (i > max2)
+                {
+                    max2= i;
+                }
+            }
+            int hely = 0;
+            for (int i = 1; i <homersekletek.Count; i++)
+            {
+                if (homersekletek[i] == max2) 
+                {
+                    hely = i;
+                    break;
+                }
+            }
+            Console.WriteLine($"A {hely+1}. nap volt a legmelegebb");
+
+            Console.ReadKey();
+
+        }
+    }
+}
